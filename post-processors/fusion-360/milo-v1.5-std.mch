@@ -37,8 +37,10 @@
             },
             "A" : {
                "coordinate" : 3,
+               "max" : 0,
                "max_normal_speed" : 0,
                "max_rapid_speed" : 0,
+               "min" : 0,
                "preference" : "negative",
                "reset" : "never",
                "reversed" : false,
