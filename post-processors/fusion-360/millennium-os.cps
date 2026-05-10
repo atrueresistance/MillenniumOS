@@ -9,9 +9,9 @@
  * (e.g. tool length calculation being automatic or manual) is a concern for the
  * firmware, _not_ this post-processor.
  *
- * As such, it is a very simple post-processor and only supports 3 axis and one
- * spindle. It will NOT output any gcode that we are not 100% certain
- * will be safe, based on the following assumptions:
+ * As such, it is a very simple post-processor and supports 3 axis (with optional
+ * 4th axis/A-axis motion) and one spindle. It will NOT output any gcode that we are
+ * not 100% certain will be safe, based on the following assumptions:
  *
  * - Your G27 (Park) macro raises Z away from the work piece _before_ running M5.
  * - It is the responsibility of your macros to run M5 where needed!
@@ -248,6 +248,7 @@ var tCmd = createOutputVariable({ control: CONTROL_FORCE }, tFmt );
 var xVar = createOutputVariable({ prefix: "X" }, axesFmt);
 var yVar = createOutputVariable({ prefix: "Y" }, axesFmt);
 var zVar = createOutputVariable({ prefix: "Z" }, axesFmt); // TODO: Investigate safe retracts using parking location
+var aVar = createOutputVariable({ prefix: "A" }, axesFmt);
 
 // Output Feed variable when set
 var fVar = createOutputVariable({ prefix:"F"}, feedFmt);
@@ -386,11 +387,12 @@ var mCodes = createModalGroup(
   mFmt);
 
 
-// Called to make sure X/Y/Z variables are output when next called
+// Called to make sure X/Y/Z/A variables are output when next called
 function resetXYZ() {
   xVar.reset();
   yVar.reset();
   zVar.reset();
+  aVar.reset();
 };
 
 // Called to make sure X/Y/Z and F variables are output when next called.
@@ -728,9 +730,9 @@ function onSection() {
   // Get start position
   var startPos = getFramePosition(currentSection.getInitialPosition());
 
-  // Move laterally from park location to initial positions in X and Y
+  // Move laterally from park location to initial positions in X, Y and A
   writeComment("Move to starting position in X and Y");
-  writeBlock(gCodesF.format(0), xVar.format(startPos.x), yVar.format(startPos.y));
+  writeBlock(gCodesF.format(0), xVar.format(startPos.x), yVar.format(startPos.y), aVar.format(startPos.a));
   writeln("");
 
   // Move to initial Z position (usually clearance height)
@@ -873,25 +875,27 @@ function onSpindleSpeed(rpm) {
 }
 
 // Called when a rapid linear move is requested
-function onRapid(x, y, z) {
+function onRapid(x, y, z, a) {
   var a1 = xVar.format(x);
   var a2 = yVar.format(y);
   var a3 = zVar.format(z);
+  var a4 = aVar.format(a);
 
   // If any co-ordinates are changing, output G0 move.
-  if (a1 || a2 || a3) {
-    writeBlock(gCodesF.format(0), a1, a2, a3);
+  if (a1 || a2 || a3 || a4) {
+    writeBlock(gCodesF.format(0), a1, a2, a3, a4);
     // Always output feed after rapid moves.
     fVar.reset();
   }
 }
 
 // Called when a controlled linear move is requested
-function onLinear(x, y, z, f) {
+function onLinear(x, y, z, f, a) {
   var a1 = xVar.format(x);
   var a2 = yVar.format(y);
   var a3 = zVar.format(z);
-  var a4 = fVar.format(f);
+  var a4 = aVar.format(a);
+  var a5 = fVar.format(f);
 
   var warpMode = getProperty("warpSpeedMode");
   var warpable = false;
@@ -917,11 +921,11 @@ function onLinear(x, y, z, f) {
   if ((isHorizontal || isVertical) && warpable) {
       writeln("");
       writeComment("Warp move");
-      writeBlock(gCodesF.format(0), a1, a2, a3);
+      writeBlock(gCodesF.format(0), a1, a2, a3, a4);
       fVar.reset();
   // Otherwise output normal linear move
-  } else if (a1 || a2 || a3) {
-    writeBlock(gCodesF.format(1), a1, a2, a3, a4);
+  } else if (a1 || a2 || a3 || a4) {
+    writeBlock(gCodesF.format(1), a1, a2, a3, a4, a5);
   // Otherwise output just feed change if necessary
   } else if(a4) {
     // Try not to output feed changes on their own unless

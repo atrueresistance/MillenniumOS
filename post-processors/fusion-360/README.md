@@ -2,7 +2,7 @@
 
 ## Intro
 
-The Fusion360 post-processor for MillenniumOS outputs a relatively basic gcode flavour that is designed to work with the RRF 3.5+ gcode format. It also targets some custom gcodes implemented by MillenniumOS, used for workpiece probing, reference surface probing and tool length probing.
+The Fusion360 post-processor for MillenniumOS outputs a relatively basic gcode flavour that is designed to work with the RRF 3.5+ gcode format. It also targets some custom gcodes implemented by MillenniumOS, used for workpiece probing, reference surface probing and tool length probing. This post-processor can optionally emit A-axis motion when the machine profile supports a 4th axis.
 
 ## Installation
 

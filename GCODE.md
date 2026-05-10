@@ -208,6 +208,16 @@ Guided probing macro that combines OUTSIDE CORNER and SINGLE SURFACE (Z) macros 
 
 Executes a Vise Corner probe using the parameters gathered by the operator. Runs a Z probe first, then each corner probe after and sets the WCS origin of all 3 axes at once.
 
+### Fourth Axis
+
+#### `G6700` - SET 4TH AXIS WORKPIECE ZERO
+
+Captures the current A-axis position and stores it in the selected work coordinate system as the 4th axis offset. Use the optional `W` parameter to choose a specific work offset, e.g. `G6700 W1`.
+
+#### `G6702` - RESET 4TH AXIS WORKPIECE ZERO
+
+Resets the selected work coordinate system's A-axis offset back to zero. Use the optional `W` parameter to choose the work offset to reset.
+
 ### Low-Level
 
 #### `G6512` - SINGLE PROBE

@@ -34,6 +34,16 @@
                "reversed" : false,
                "tcp" : false,
                "zero_position_offset" : 0
+            },
+            "A" : {
+               "coordinate" : 3,
+               "max_normal_speed" : 0,
+               "max_rapid_speed" : 0,
+               "preference" : "negative",
+               "reset" : "never",
+               "reversed" : false,
+               "tcp" : false,
+               "zero_position_offset" : 0
             }
          },
          "table_part_id" : "table"
@@ -47,7 +57,7 @@
    },
    "general" : {
       "capabilities" : [ "milling" ],
-      "description" : "3-Axis DIY Desktop CNC Mill using the standard build dimensions.\n\nX=0 to 335mm\nY=0 to 208mm\nZ=0 to -120mm\n",
+      "description" : "3-Axis DIY Desktop CNC Mill using the standard build dimensions.\n\nX=0 to 335mm\nY=0 to 208mm\nZ=0 to -120mm\n\nThis configuration also supports an optional 4th axis (A-axis) on the table.",
       "minimumRevision" : 45805,
       "model" : "Milo V1.5 - Standard",
       "vendor" : "Millennium Machines"
@@ -279,6 +289,17 @@
                                  },
                                  "display_name" : "Table",
                                  "id" : "table",
+                                 "parts" : [
+                                    {
+                                       "control" : "driven",
+                                       "direction" : [ 1, -0, 0 ],
+                                       "id" : "A",
+                                       "max" : 360,
+                                       "min" : 0,
+                                       "name" : "A",
+                                       "type" : "rotary"
+                                    }
+                                 ],
                                  "type" : "table"
                               }
                            ],
